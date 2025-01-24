@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
 
   FILE *output_fd = stdout;
   if (output_index > 0) {
-    char *output_name = argv[output_index];
+    const char *output_name = argv[output_index];
     FILE *file = fopen(output_name, "w");
 
     if (file == NULL) {
@@ -58,27 +58,22 @@ int main(int argc, char **argv) {
     }
   }
 
-  char *header_upper = upper(argv[1]);
+  const char *header_upper = upper(argv[1]);
 
   fprintf(output_fd, "#ifndef %s_H_\n", header_upper);
   fprintf(output_fd, "#define %s_H_\n", header_upper);
 
   fprintf(output_fd, "\n");
 
-  if (output_index > 0) {
-    for (int input_index = 2; input_index < output_index - 1; ++input_index) {
-      parse_file(argv[input_index], output_fd);
-    }
-  } else {
-    for (int input_index = 2; input_index < argc; ++input_index) {
-      parse_file(argv[input_index], output_fd);
-    }
+  const int target = (output_index > 0) ? output_index - 1 : argc;
+  for (int input_index = 2; input_index < target; ++input_index) {
+    parse_file(argv[input_index], output_fd);
   }
 
   fprintf(output_fd, "#endif // %s_H_\n", header_upper);
 
+  if (output_fd != stdout) fclose(output_fd);
 
-  fclose(output_fd);
   return 0;
 }
 
@@ -94,7 +89,7 @@ static void* SAOK2C_malloc(size_t size) {
 }
 
 char* upper(char *s) {
-  size_t s_len = strlen(s);
+  const size_t s_len = strlen(s);
 
   char *out = (char *)SAOK2C_malloc(s_len + 1);
 
@@ -112,7 +107,7 @@ char* upper(char *s) {
 
 size_t get_file_size(FILE *file) {
   fseek(file, 0L, SEEK_END);
-  size_t input_size = ftell(file);
+  const size_t input_size = ftell(file);
   rewind(file);
 
   return input_size;
@@ -125,7 +120,7 @@ void parse_file(char *input_name, FILE *output_fd) {
     return;
   }
 
-  size_t input_name_size = strlen(input_name);
+  const size_t input_name_size = strlen(input_name);
   size_t const_name_size = 0;
 
   while (const_name_size < input_name_size && input_name[const_name_size] != '.') {
@@ -136,9 +131,8 @@ void parse_file(char *input_name, FILE *output_fd) {
   strncpy(const_name, input_name, const_name_size);
   const_name[const_name_size] = '\0';
 
-  char *const_name_upper = upper(const_name);
-
-  size_t input_size = get_file_size(input_file);
+  const char *const_name_upper = upper(const_name);
+  const size_t input_size = get_file_size(input_file);
 
   fprintf(output_fd, "#define %s_SIZE %zu\n\n", const_name_upper, input_size);
   fprintf(output_fd, "const char %s[%s_SIZE] = {\n", const_name, const_name_upper);
