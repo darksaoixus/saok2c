@@ -31,10 +31,10 @@ void   parse_file(char *input_name, FILE *output_fd);
 
 int main(int argc, char **argv) {
   if (argc < 3) {
-    printf("Usage: %s <header_name> <input_file1> [input_file2] ... [input_filen] -- [outputfile]\n", argv[0]);
+    printf("Usage: %s <header_name> <input_file1> [input_file2] ... [input_filen] -- [output_file]\n", argv[0]);
     printf("\theader_name: name of the final header name WITHOUT extension\n");
     printf("\tinput_file(s): names of the input files\n");
-    printf("\toutputfile: name of the output file (optional: default 'stdout')\n");
+    printf("\toutput_file: name of the output file (optional: default 'stdout')\n");
     return 0;
   }
 
@@ -121,7 +121,7 @@ size_t get_file_size(FILE *file) {
 void parse_file(char *input_name, FILE *output_fd) {
   FILE *input_file = fopen(input_name, "r");
   if (input_file == NULL) {
-    perror("Error opening input file");
+    fprintf(stderr, "Error opening input file '%s': %s\n", input_name, strerror(errno));
     return;
   }
 
