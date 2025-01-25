@@ -120,12 +120,8 @@ void parse_file(char *input_name, FILE *output_fd) {
     return;
   }
 
-  const size_t input_name_size = strlen(input_name);
-  size_t const_name_size = 0;
-
-  while (const_name_size < input_name_size && input_name[const_name_size] != '.') {
-    const_name_size++;
-  }
+  const char *dot = strchr(input_name, '.');
+  const size_t const_name_size = dot ? (size_t)(dot - input_name) : strlen(input_name);
 
   char *const_name = (char *)SAOK2C_malloc(const_name_size + 1);
   strncpy(const_name, input_name, const_name_size);
